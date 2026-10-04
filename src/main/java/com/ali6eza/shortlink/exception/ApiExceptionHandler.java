@@ -1,8 +1,5 @@
-package com.ali6eza.shortlink.controller;
+package com.ali6eza.shortlink.exception;
 
-import com.ali6eza.shortlink.exception.InvalidUrlException;
-import com.ali6eza.shortlink.exception.LinkNotFoundException;
-import com.ali6eza.shortlink.exception.ShortCodeGenerationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
