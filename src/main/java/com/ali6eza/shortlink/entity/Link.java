@@ -31,9 +31,17 @@ public class Link {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    public Link(String originalUrl, String shortCode) {
+    @Column(name = "expires_at")
+    private Instant expiresAt;
+
+    public Link(String originalUrl, String shortCode, Instant createdAt, Instant expiresAt) {
         this.originalUrl = originalUrl;
         this.shortCode = shortCode;
-        this.createdAt = Instant.now();
+        this.createdAt = createdAt;
+        this.expiresAt = expiresAt;
+    }
+
+    public boolean isExpiredAt(Instant now) {
+        return expiresAt != null && !now.isBefore(expiresAt);
     }
 }

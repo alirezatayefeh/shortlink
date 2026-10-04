@@ -42,8 +42,12 @@ path, or deployment domain.
 ## API
 
 - `POST /api/links`: send `{"originalUrl":"https://example.com"}` to create a link.
-  Returns 201 with `shortCode`, `shortUrl`, `originalUrl`, and `createdAt`.
-- `GET /{shortCode}`: returns a 302 redirect, or 404 for an unknown code.
+  Returns 201 with `shortCode`, `shortUrl`, `originalUrl`, `createdAt`, and `expiresAt`.
+  An optional `expiresAt` accepts an ISO-8601 timestamp with an offset, for example
+  `2030-01-01T00:00:00Z`. It must be in the future; omitted or null means no expiration.
+  Times are stored at microsecond precision and returned in UTC.
+- `GET /{shortCode}`: returns a 302 redirect, 404 for an unknown code, or 410 when
+  the current time is at or after expiration. Expired records are retained.
 - Invalid input returns 400. Only absolute HTTP/HTTPS URLs without credentials
   are accepted, up to 2048 characters. Destination availability is not checked.
 
@@ -60,7 +64,8 @@ conflicts are retried up to five times. Exception handling uses Problem Detail r
 Docker must be running. Tests start an isolated PostgreSQL 17 container through
 Testcontainers and do not use the Compose database.
 Tests cover creation, persistence, redirects, invalid input, missing codes,
-and retries after real database uniqueness conflicts.
+retries after real database uniqueness conflicts, and expiration boundaries using
+a controlled clock without sleeps.
 
 ## Stop
 
