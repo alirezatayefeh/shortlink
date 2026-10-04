@@ -1,7 +1,7 @@
 # Shortlink
 
 A URL shortener built with Java 21, Spring Boot, and PostgreSQL.
-Currently includes the application skeleton and local database setup; link APIs are not implemented yet.
+Creates short links, stores them in PostgreSQL, and redirects visitors to their original URLs.
 
 ## Requirements
 
@@ -23,7 +23,9 @@ Run the application on Windows:
 ```
 
 On macOS/Linux, use `./mvnw spring-boot:run`.
-The server listens on port 8080. A request to `/` returns 404 until an endpoint is implemented.
+The server listens on port 8080. Swagger UI is available at
+`http://localhost:8080/swagger-ui/index.html`; its URL is logged at startup.
+There is no homepage at `/`.
 
 The default database is `shortlink` at `localhost:5432`, with username `shortlink`
 and password `shortlink_dev`. These credentials are for local development only.
@@ -31,7 +33,23 @@ Override the application connection with `DB_URL`, `DB_USERNAME`, and `DB_PASSWO
 environment variables when connecting to another database.
 
 Flyway manages schema migrations; Hibernate validates entity mappings rather than
-creating tables. No application tables or migrations exist yet.
+creating tables. The first migration creates the `links` table.
+
+Set `APP_BASE_URL` to the public address used in generated short links.
+It defaults to `http://localhost:8080`; update it when changing the port, context
+path, or deployment domain.
+
+## API
+
+- `POST /api/links`: send `{"originalUrl":"https://example.com"}` to create a link.
+  Returns 201 with `shortCode`, `shortUrl`, `originalUrl`, and `createdAt`.
+- `GET /{shortCode}`: returns a 302 redirect, or 404 for an unknown code.
+- Invalid input returns 400. Only absolute HTTP/HTTPS URLs without credentials
+  are accepted, up to 2048 characters. Destination availability is not checked.
+
+Controllers handle HTTP; the service creates response DTOs and coordinates
+persistence. A separate generator creates random codes, and database uniqueness
+conflicts are retried up to five times. Exception handling uses Problem Detail responses.
 
 ## Verify
 
@@ -41,6 +59,8 @@ creating tables. No application tables or migrations exist yet.
 
 Docker must be running. Tests start an isolated PostgreSQL 17 container through
 Testcontainers and do not use the Compose database.
+Tests cover creation, persistence, redirects, invalid input, missing codes,
+and retries after real database uniqueness conflicts.
 
 ## Stop
 
