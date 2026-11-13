@@ -9,9 +9,9 @@ import com.ali6eza.shortlink.exception.LinkNotFoundException;
 import com.ali6eza.shortlink.exception.ShortCodeGenerationException;
 import com.ali6eza.shortlink.repository.LinkRepository;
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import com.ali6eza.shortlink.config.AppProperties;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,12 +33,12 @@ public class LinkService {
             LinkRepository linkRepository,
             ShortCodeGenerator codeGenerator,
             Clock clock,
-            @Value("${app.base-url}") String baseUrl
+            AppProperties appProperties
     ) {
         this.linkRepository = linkRepository;
         this.codeGenerator = codeGenerator;
         this.clock = clock;
-        this.baseUrl = baseUrl.replaceAll("/+$", "");
+        this.baseUrl = appProperties.baseUrl().replaceAll("/+$", "");
     }
 
     public CreateLinkResponse create(String originalUrl, Instant expiresAt) {
