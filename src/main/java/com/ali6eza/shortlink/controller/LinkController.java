@@ -24,7 +24,7 @@ public class LinkController {
 
     @PostMapping("/api/links")
     public ResponseEntity<CreateLinkResponse> create(@Valid @RequestBody CreateLinkRequest request) {
-        CreateLinkResponse response = linkService.create(request.originalUrl());
+        CreateLinkResponse response = linkService.create(request.originalUrl(), request.expiresAt());
         return ResponseEntity.created(URI.create(response.shortUrl())).body(response);
     }
 

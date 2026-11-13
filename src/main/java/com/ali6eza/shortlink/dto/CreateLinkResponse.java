@@ -6,6 +6,7 @@ public record CreateLinkResponse(
         String shortCode,
         String shortUrl,
         String originalUrl,
-        Instant createdAt
+        Instant createdAt,
+        Instant expiresAt
 ) {
 }

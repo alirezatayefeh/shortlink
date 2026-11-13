@@ -9,6 +9,16 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(InvalidExpirationException.class)
+    public ProblemDetail handleInvalidExpiration(InvalidExpirationException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(LinkExpiredException.class)
+    public ProblemDetail handleLinkExpired(LinkExpiredException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.GONE, exception.getMessage());
+    }
+
     @ExceptionHandler(InvalidUrlException.class)
     public ProblemDetail handleInvalidUrl(InvalidUrlException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
